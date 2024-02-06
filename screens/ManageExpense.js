@@ -1,13 +1,21 @@
-import { useLayoutEffect } from "react";
-import { StyleSheet, View } from "react-native";
+import { useContext, useLayoutEffect } from "react";
+import { StyleSheet, TextInput, View } from "react-native";
+
+import { ExpensesContext } from "../store/expenses-context";
 
 import { GlobalStyles } from "../constants/styles";
 import IconButton from "../components/UI/IconButton";
-import Button from "../components/UI/Button";
+import ExpenseForm from "../components/ManageExpense/ExpenseForm";
 
 function ManageExpense({ route, navigation }) {
+  const expenseCtx = useContext(ExpensesContext);
+
   const editedExpenseId = route.params?.expenseId;
   const isEditting = !!editedExpenseId;
+
+  const selecteddExpense = expenseCtx.expenses.find(
+    (expense) => expense.id === editedExpenseId
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -16,6 +24,7 @@ function ManageExpense({ route, navigation }) {
   }, [navigation, isEditting]);
 
   function deleteExpenseHandler() {
+    expenseCtx.deleteExpense(editedExpenseId);
     navigation.goBack();
   }
 
@@ -23,21 +32,23 @@ function ManageExpense({ route, navigation }) {
     navigation.goBack();
   }
 
-  function confirmHandler() {
+  function confirmHandler(expenseData) {
+    if (isEditting) {
+      expenseCtx.updateExpnese(editedExpenseId, expenseData);
+    } else {
+      expenseCtx.addExpense(expenseData);
+    }
     navigation.goBack();
   }
 
   return (
     <View style={styles.container}>
-      <View style={styles.buttons}>
-        <Button style={styles.button} mode="flat" onPress={cancelHandler}>
-          Cancel
-        </Button>
-        <Button style={styles.button} onPress={confirmHandler}>
-          {isEditting ? "Update" : "Add"}
-        </Button>
-      </View>
-
+      <ExpenseForm
+        onCancel={cancelHandler}
+        submitButtonLabel={isEditting ? "Update" : "Add"}
+        onSubmit={confirmHandler}
+        defaultValues = {selecteddExpense}
+      />
       {isEditting && (
         <View style={styles.deleteContainer}>
           <IconButton
@@ -66,14 +77,5 @@ const styles = StyleSheet.create({
     borderTopWidth: 2,
     borderTopColor: GlobalStyles.colors.primary200,
     alignItems: "center",
-  },
-  buttons: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  button: {
-    minWidth: 120,
-    marginHorizontal: 8,
   },
 });

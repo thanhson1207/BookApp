@@ -5,19 +5,19 @@ const DUMMY_EXPENSES = [
     id: "e1",
     description: "A pair of shoes",
     amount: 44.21,
-    date: new Date("2021-11-23"),
+    date: new Date("2024-1-1"),
   },
   {
     id: "e2",
     description: "A pair of trousers",
     amount: 14.21,
-    date: new Date("2022-1-21"),
+    date: new Date("2023-12-29"),
   },
   {
     id: "e3",
     description: "Apple",
     amount: 4.11,
-    date: new Date("2022-11-13"),
+    date: new Date("2023-12-31"),
   },
   {
     id: "e4",
@@ -74,12 +74,12 @@ function expensesReducer(state, action) {
         (expense) => expense.id === action.payload.id
       );
       const updatableExpense = state[updatableExpenseIndex];
-      const updateItem = {...updatableExpense, ...action.payload.data}
+      const updateItem = { ...updatableExpense, ...action.payload.data };
       const updatedExpenses = [...state];
       updatedExpenses[updatableExpenseIndex] = updateItem;
       return updatedExpenses;
     case "DELETE":
-        return state.filter((expense) => expense.id !== action.payload)
+      return state.filter((expense) => expense.id !== action.payload);
     default:
       return state;
   }
@@ -100,7 +100,18 @@ function ExpensesContextProvider({ children }) {
     dispatch({ type: "UPDATE", payload: { id: id, data: expenseData } });
   }
 
-  return <ExpensesContext.Provider>{children}</ExpensesContext.Provider>;
+  const value = {
+    expenses: expensesState,
+    addExpense: addExpense,
+    deleteExpense: deleteExpense,
+    updateExpnese: updateExpnese,
+  };
+
+  return (
+    <ExpensesContext.Provider value={value}>
+      {children}
+    </ExpensesContext.Provider>
+  );
 }
 
 export default ExpensesContextProvider;

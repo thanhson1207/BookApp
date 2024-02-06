@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 16,
     marginBottom: 4,
-    fontWeight: 8,
+    fontWeight: '600',
   },
   amountContainer: {
     paddingHorizontal: 12,
